@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meditation Site</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            font-family: 'GT Eesti Pro Display Regular', sans-serif;
+            background-color: transparent;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        #backgroundVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            max-width: 800px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .realtime-data {
+            font-size: 24px;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 20px;
+            color: #fff;
+        }
+
+        .music-button {
+            background-color: #0F61FF;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .music-button:hover {
+            background-color: #003EE0;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <video id="backgroundVideo" playsinline autoplay loop muted>
+            <source src="" type="video/mp4">
+            Your browser does not support HTML5 video.
+        </video>
+    </div>
+
+    <div class="content">
+        <div id="realtimeData" class="realtime-data"></div>
+        <button id="musicButton" class="music-button">Play Music</button>
+    </div>
+
+    <audio id="backgroundMusic" loop>
+        <source src="calm-music.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        // Array of background video filenames
+        const videoFilenames = ['ocean.mp4', '213390_small.mp4'];
+
+        // Function to select a random video filename
+        function getRandomVideoFilename() {
+            const randomIndex = Math.floor(Math.random() * videoFilenames.length);
+            return videoFilenames[randomIndex];
+        }
+
+        // Set the background video source to a random file from the array
+        const backgroundVideo = document.getElementById('backgroundVideo');
+        backgroundVideo.querySelector('source').src = getRandomVideoFilename();
+        backgroundVideo.load();
+
+        async function fetchAndUpdateData() {
+            try {
+                let response = await fetch('https://api.tzkt.io/v1/statistics/current');
+                let data = await response.json();
+                let realtimeDataElement = document.getElementById('realtimeData');
+                realtimeDataElement.textContent = `Staked tez: ${parseInt(data.totalFrozen / 1000000).toLocaleString()}`;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        fetchAndUpdateData();
+        setInterval(fetchAndUpdateData, 30000);
+
+        const musicButton = document.getElementById('musicButton');
+        const backgroundMusic = document.getElementById('backgroundMusic');
+
+        musicButton.addEventListener('click', function() {
+            if (backgroundMusic.paused) {
+                playMusic();
+            } else {
+                pauseMusic();
+            }
+        });
+
+        function playMusic() {
+            backgroundMusic.play().then(function() {
+                musicButton.textContent = 'Pause Music';
+            }).catch(function(error) {
+                console.error('Failed to start audio playback:', error);
+            });
+        }
+
+        function pauseMusic() {
+            backgroundMusic.pause();
+            musicButton.textContent = 'Play Music';
+        }
+    </script>
+</body>
+</html>
