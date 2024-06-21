@@ -217,7 +217,7 @@
                 const current = start + progress * (end - start);
 
                 // Display formatted number with fixed width
-                element.textContent = `Staked tez: ${current.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+                element.textContent = `Staked tez: ${current.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
                 // Adjust font size dynamically based on content length
                 const contentWidth = element.offsetWidth; // Get current width of the content
