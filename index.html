@@ -39,7 +39,7 @@
             position: relative;
             z-index: 1;
             text-align: center;
-            padding: 20px;
+            padding: 10px;
             background-color: rgba(255, 255, 255, 0.8);
             border-radius: 10px;
             max-width: 800px;
@@ -55,28 +55,33 @@
             background-color: rgba(0, 0, 0, 0.5);
             padding: 10px;
             border-radius: 10px;
-            margin-top: 20px;
+            margin-top: 10px;
             color: #fff;
         }
 
         .music-button {
-            background-color: #0F61FF;
-            color: #fff;
+            background-color: transparent;
             border: none;
-            padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
             border-radius: 5px;
-            margin-top: 20px;
-            transition: background-color 0.3s ease;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .music-button img {
+            width: 24px;
+            height: 24px;
         }
 
         .music-button:hover {
-            background-color: #003EE0;
+            background-color: rgba(0, 0, 0, 0.1);
         }
 
         .icon-link {
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
         .icon-link img {
@@ -94,8 +99,12 @@
     </div>
 
     <div class="content">
+        <div class="button-container">
+            <button id="musicButton" class="music-button">
+                <img id="musicIcon" src="icons/silence.png" alt="Audio Icon">
+            </button>
+        </div>
         <div id="realtimeData" class="realtime-data"></div>
-        <button id="musicButton" class="music-button">Play Music</button>
         <a href="https://github.com/xtzchad/up.xtzchad.xyz" class="icon-link" target="_blank">
             <img src="icons/Tezos-social-icon-black-04.png" alt="Tezos Icon">
         </a>
@@ -136,6 +145,7 @@
         setInterval(fetchAndUpdateData, 30000);
 
         const musicButton = document.getElementById('musicButton');
+        const musicIcon = document.getElementById('musicIcon');
         const backgroundMusic = document.getElementById('backgroundMusic');
 
         musicButton.addEventListener('click', function() {
@@ -148,7 +158,8 @@
 
         function playMusic() {
             backgroundMusic.play().then(function() {
-                musicButton.textContent = 'Pause Music';
+                musicIcon.src = 'icons/audio.png';
+                musicIcon.alt = 'Pause Icon';
             }).catch(function(error) {
                 console.error('Failed to start audio playback:', error);
             });
@@ -156,7 +167,8 @@
 
         function pauseMusic() {
             backgroundMusic.pause();
-            musicButton.textContent = 'Play Music';
+            musicIcon.src = 'icons/silence.png';
+            musicIcon.alt = 'Audio Icon';
         }
     </script>
 </body>
