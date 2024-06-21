@@ -1,6 +1,8 @@
 # TezCalm
 
-TezCalm is a meditation website designed to help you relax and stay informed about the latest staking statistics from the Tezos blockchain.
+TezCalm is a meditation website designed to help you relax and stay informed about the latest staking statistics from the Tezos blockchain. 
+
+Live at https://up.xtzchad.xyz
 
 ## Features
 
