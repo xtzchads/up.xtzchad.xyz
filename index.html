@@ -172,7 +172,7 @@
                 let data = await response.json();
 
                 // Update staking ratios and calculate EMA
-                stakingRatios = data.map(block => parseInt(block.totalFrozen / 1000000));
+                stakingRatios = data.map(block => block.totalFrozen / 1000000);
                 ema = calculateEMA(stakingRatios);
 
                 // Update progress bar
