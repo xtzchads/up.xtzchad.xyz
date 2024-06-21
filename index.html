@@ -161,8 +161,7 @@
         backgroundVideo.querySelector('source').src = getRandomVideoFilename();
         backgroundVideo.load();
 
-        // Exponential Moving Average calculation
-        let ema = 0; // Initial value for EMA
+        let ema = 0; // Initial value for EMA, later changed to SMA
         let stakingRatios = []; // Array to store staking ratios
         let cur = 0;
 
