@@ -65,10 +65,10 @@
             font-size: 16px;
             cursor: pointer;
             border-radius: 5px;
-            margin-top: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: background-color 0.3s ease;
         }
 
         .music-button img {
@@ -78,6 +78,34 @@
 
         .music-button:hover {
             background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            width: 100%;
+            max-width: 600px;
+            height: 40px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(to right, #0F61FF, #003EE0);
+            transition: width 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #000; /* Black text for better readability */
         }
 
         .icon-link {
@@ -105,6 +133,10 @@
             </button>
         </div>
         <div id="realtimeData" class="realtime-data"></div>
+        <div class="progress-bar">
+            <div id="progress" class="progress"></div>
+            <div id="progressText" class="progress-text">0%</div>
+        </div>
         <a href="https://github.com/xtzchad/up.xtzchad.xyz" class="icon-link" target="_blank">
             <img src="icons/Tezos-social-icon-black-04.png" alt="Tezos Icon">
         </a>
@@ -116,16 +148,13 @@
     </audio>
 
     <script>
-        // Array of background video filenames
         const videoFilenames = ['backgrounds/1.mp4', 'backgrounds/2.mp4', 'backgrounds/3.mp4', 'backgrounds/4.mp4', 'backgrounds/5.mp4'];
 
-        // Function to select a random video filename
         function getRandomVideoFilename() {
             const randomIndex = Math.floor(Math.random() * videoFilenames.length);
             return videoFilenames[randomIndex];
         }
 
-        // Set the background video source to a random file from the array
         const backgroundVideo = document.getElementById('backgroundVideo');
         backgroundVideo.querySelector('source').src = getRandomVideoFilename();
         backgroundVideo.load();
@@ -136,9 +165,20 @@
                 let data = await response.json();
                 let realtimeDataElement = document.getElementById('realtimeData');
                 realtimeDataElement.textContent = `Staked tez: ${parseInt(data.totalFrozen / 1000000).toLocaleString()}`;
+
+                updateProgressBar(data.totalFrozen, data.totalSupply);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
+        }
+
+        function updateProgressBar(totalFrozen, totalSupply) {
+            const progress = (totalFrozen / totalSupply) * 100;
+            const progressElement = document.getElementById('progress');
+            progressElement.style.width = `${progress}%`;
+
+            const progressTextElement = document.getElementById('progressText');
+            progressTextElement.textContent = `${progress.toFixed(2)}%`;
         }
 
         fetchAndUpdateData();
