@@ -50,6 +50,12 @@
             align-items: center;
         }
 
+        .button-container {
+            display: flex;
+            gap: 10px; /* Add some space between buttons */
+            margin-bottom: 10px; /* Add some space below the buttons */
+        }
+
         .realtime-data {
             font-size: 24px;
             background-color: rgba(0, 0, 0, 0.5);
@@ -124,7 +130,7 @@
 <body>
     <div class="video-container">
         <video id="backgroundVideo" playsinline autoplay loop muted>
-            <source src="" type="video/mp4">
+            <source src="backgrounds/1.mp4" type="video/mp4">
             Your browser does not support HTML5 video.
         </video>
     </div>
@@ -133,6 +139,12 @@
         <div class="button-container">
             <button id="musicButton" class="music-button">
                 <img id="musicIcon" src="icons/silence.png" alt="Audio Icon">
+            </button>
+            <button id="shuffleButton" class="music-button">
+                <img id="shuffleIcon" src="icons/shuffle.png" alt="Shuffle Icon">
+            </button>
+            <button id="backgroundButton" class="music-button">
+                <img id="backgroundIcon" src="icons/background.png" alt="Background Icon">
             </button>
         </div>
         <div id="realtimeData" class="realtime-data">Staked tez: 0.000000</div>
@@ -146,19 +158,15 @@
     </div>
 
     <audio id="backgroundMusic" loop>
-        <source src="music/calm-music.mp3" type="audio/mpeg">
+        <source src="music/1.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
 
     <script>
-        const videoFilenames = ['backgrounds/1.mp4', 'backgrounds/2.mp4', 'backgrounds/3.mp4', 'backgrounds/4.mp4', 'backgrounds/5.mp4'];
-
-        function getRandomVideoFilename() {
-            return videoFilenames[Math.floor(Math.random() * videoFilenames.length)];
-        }
-
+		let currentBackground = Math.floor(Math.random() * 5 + 1);
+		const totalBackgrounds = 5;
         const backgroundVideo = document.getElementById('backgroundVideo');
-        backgroundVideo.querySelector('source').src = getRandomVideoFilename();
+        backgroundVideo.querySelector('source').src = 'backgrounds/'+currentBackground+'.mp4';
         backgroundVideo.load();
 
         let ema = 0; // Initial value for EMA, later changed to SMA
@@ -253,12 +261,22 @@
         const musicIcon = document.getElementById('musicIcon');
         const backgroundMusic = document.getElementById('backgroundMusic');
 
+        let currentTrack = 1;
+        const totalTracks = 2;
+
+        const shuffleButton = document.getElementById('shuffleButton');
+        const shuffleIcon = document.getElementById('shuffleIcon');
+
         musicButton.addEventListener('click', function () {
             if (backgroundMusic.paused) {
                 playMusic();
             } else {
                 pauseMusic();
             }
+        });
+
+        shuffleButton.addEventListener('click', function () {
+            switchTrack();
         });
 
         function playMusic() {
@@ -274,6 +292,27 @@
             backgroundMusic.pause();
             musicIcon.src = 'icons/silence.png';
             musicIcon.alt = 'Audio Icon';
+        }
+
+        function switchTrack() {
+            currentTrack = (currentTrack % totalTracks) + 1;
+            backgroundMusic.src = `music/${currentTrack}.mp3`;
+            backgroundMusic.load();
+            playMusic();
+        }
+
+        const backgroundButton = document.getElementById('backgroundButton');
+        const backgroundIcon = document.getElementById('backgroundIcon');
+
+
+        backgroundButton.addEventListener('click', function () {
+            switchBackground();
+        });
+
+        function switchBackground() {
+            currentBackground = (currentBackground % totalBackgrounds) + 1;
+            backgroundVideo.querySelector('source').src = `backgrounds/${currentBackground}.mp4`;
+            backgroundVideo.load();
         }
 
         // Initial fetch and setup
