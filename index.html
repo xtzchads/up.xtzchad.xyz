@@ -166,20 +166,24 @@
         let stakingRatios = []; // Array to store staking ratios
         let cur = 0;
 
-		async function fetchAndUpdateData() {
-			try {
-			const startTime = performance.now(); // Start measuring fetch time
-			let response = await fetch('https://api.tzkt.io/v1/statistics/?sort.desc=level&limit=60');
-			let data = await response.json();
-			const fetchTime = performance.now() - startTime; // Calculate fetch time
-			stakingRatios = data.map(block => block.totalFrozen / 1000000);
-			ema = calculateEMA(stakingRatios);
-			const animationDuration = Math.max(0,30000-fetchTime); // Adjust animation time
-			updateProgressBar(data[0].totalFrozen, data[0].totalSupply,animationDuration);
-			} catch (error) {
-			console.error('Error fetching data:', error);
-			}
+	async function fetchAndUpdateData() {
+		try {
+		const startTime = performance.now(); // Start measuring fetch time
+		let response = await fetch('https://api.tzkt.io/v1/statistics/?sort.desc=level&limit=60');
+                if (!response.ok) {
+                    // Retry with kukai.api.tzkt.io if fetch fails
+                    response = await fetch('https://kukai.api.tzkt.io/v1/statistics/?sort.desc=level&limit=60');
+                }
+		let data = await response.json();
+		const fetchTime = performance.now() - startTime; // Calculate fetch time
+		stakingRatios = data.map(block => block.totalFrozen / 1000000);
+		ema = calculateEMA(stakingRatios);
+		const animationDuration = Math.max(0,30000-fetchTime); // Adjust animation time
+		updateProgressBar(data[0].totalFrozen, data[0].totalSupply,animationDuration);
+		} catch (error) {
+		console.error('Error fetching data:', error);
 		}
+	}
 
         function calculateEMA(values) {
             if (!values.length)
