@@ -166,21 +166,20 @@
         let stakingRatios = []; // Array to store staking ratios
         let cur = 0;
 
-        async function fetchAndUpdateData() {
-            try {
-                let response = await fetch('https://api.tzkt.io/v1/statistics/?sort.desc=level&limit=60');
-                let data = await response.json();
-
-                // Update staking ratios and calculate EMA
-                stakingRatios = data.map(block => block.totalFrozen / 1000000);
-                ema = calculateEMA(stakingRatios);
-
-                // Update progress bar
-                updateProgressBar(data[0].totalFrozen, data[0].totalSupply);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        }
+		async function fetchAndUpdateData() {
+			try {
+			const startTime = performance.now(); // Start measuring fetch time
+			let response = await fetch('https://api.tzkt.io/v1/statistics/?sort.desc=level&limit=60');
+			let data = await response.json();
+			const fetchTime = performance.now() - startTime; // Calculate fetch time
+			stakingRatios = data.map(block => block.totalFrozen / 1000000);
+			ema = calculateEMA(stakingRatios);
+			const animationDuration = Math.max(0,30000-fetchTime); // Adjust animation time
+			updateProgressBar(data[0].totalFrozen, data[0].totalSupply,animationDuration);
+			} catch (error) {
+			console.error('Error fetching data:', error);
+			}
+		}
 
         function calculateEMA(values) {
             if (!values.length)
@@ -197,12 +196,12 @@
             return ema;
         }
 
-        function updateCounter() {
+        function updateCounter(duration) {
             const currentValue = cur;
             if (cur == 0)
                 animateValue(currentValue, ema, 1500);
             else
-                animateValue(currentValue, ema, 25000);
+                animateValue(currentValue, ema, duration);
             cur = ema;
         }
 
@@ -234,7 +233,7 @@
             window.requestAnimationFrame(step);
         }
 
-        function updateProgressBar(totalFrozen, totalSupply) {
+        function updateProgressBar(totalFrozen, totalSupply, duration) {
             const progress = (totalFrozen / totalSupply) * 100;
             const progressElement = document.getElementById('progress');
             progressElement.style.width = `${progress}%`;
@@ -242,7 +241,7 @@
             const progressTextElement = document.getElementById('progressText');
             progressTextElement.textContent = `${progress.toFixed(2)}%`;
 
-            updateCounter();
+            updateCounter(duration);
         }
 
         setInterval(fetchAndUpdateData, 30000); // Update every 30 seconds
@@ -278,3 +277,4 @@
         fetchAndUpdateData();
     </script>
 </body>
+</html>
