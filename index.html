@@ -57,6 +57,9 @@
             border-radius: 10px;
             margin-top: 10px;
             color: #fff;
+            width: 200px; /* Fixed width to prevent shaking */
+            text-align: center;
+            overflow: hidden;
         }
 
         .music-button {
@@ -151,8 +154,7 @@
         const videoFilenames = ['backgrounds/1.mp4', 'backgrounds/2.mp4', 'backgrounds/3.mp4', 'backgrounds/4.mp4', 'backgrounds/5.mp4'];
 
         function getRandomVideoFilename() {
-            const randomIndex = Math.floor(Math.random() * videoFilenames.length);
-            return videoFilenames[randomIndex];
+            return videoFilenames[Math.floor(Math.random() * videoFilenames.length)];
         }
 
         const backgroundVideo = document.getElementById('backgroundVideo');
@@ -160,20 +162,19 @@
         backgroundVideo.load();
 
         // Exponential Moving Average calculation
-        const alpha = 0.2; // Weight factor for smoothing
         let ema = 0; // Initial value for EMA
-        let lastEMAUpdate = Date.now(); // Track last EMA update time
-        let currentStakedValue = 0; // Current staked value to display
+        let stakingRatios = []; // Array to store staking ratios
+        let cur = 0;
 
         async function fetchAndUpdateData() {
             try {
                 let response = await fetch('https://api.tzkt.io/v1/statistics/?sort.desc=level&limit=60');
                 let data = await response.json();
 
-                // Calculate EMA from fetched data
-                let stakingRatios = data.map(block => parseInt(block.totalFrozen/1000000));
+                // Update staking ratios and calculate EMA
+                stakingRatios = data.map(block => parseInt(block.totalFrozen / 1000000));
                 ema = calculateEMA(stakingRatios);
-				
+
                 // Update progress bar
                 updateProgressBar(data[0].totalFrozen, data[0].totalSupply);
             } catch (error) {
@@ -184,18 +185,49 @@
         function calculateEMA(values) {
             if (!values.length) return 0;
             const smoothingFactor = 2 / (values.length + 1);
-            let ema = values[values.length-1];
+            let ema = values[values.length - 1];
 
             for (let i = 1; i < values.length; i++) {
                 ema = (values[i] - ema) * smoothingFactor + ema;
             }
-			console.log(ema);
             return ema;
         }
 
         function updateCounter() {
-                currentStakedValue = ema;
-                document.getElementById('realtimeData').textContent = `Staked tez: ${parseInt(currentStakedValue).toLocaleString()}`;
+            const currentValue = cur;
+            if (cur == 0)
+                animateValue(currentValue, ema, 1500);
+            else
+                animateValue(currentValue, ema, 25000);
+            cur = ema;
+        }
+
+        function animateValue(start, end, duration) {
+            let startTimestamp = null;
+            const element = document.getElementById('realtimeData');
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const current = start + progress * (end - start);
+
+                // Display formatted number with fixed width
+                element.textContent = `Staked tez: ${current.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+                // Adjust font size dynamically based on content length
+                const contentWidth = element.offsetWidth; // Get current width of the content
+                const elementWidth = element.clientWidth; // Get current width of the element
+                const fontSize = parseInt(window.getComputedStyle(element).fontSize); // Get current font size
+                if (contentWidth > elementWidth) {
+                    element.style.fontSize = `${fontSize - 1}px`; // Decrease font size if content is wider than the element
+                } else if (fontSize < 24) {
+                    element.style.fontSize = '24px'; // Reset font size to default if it was decreased previously
+                }
+
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
         }
 
         function updateProgressBar(totalFrozen, totalSupply) {
@@ -206,7 +238,7 @@
             const progressTextElement = document.getElementById('progressText');
             progressTextElement.textContent = `${progress.toFixed(2)}%`;
 
-            updateCounter(); // Update the counter whenever the progress bar updates
+            updateCounter();
         }
 
         setInterval(fetchAndUpdateData, 30000); // Update every 30 seconds
@@ -215,7 +247,7 @@
         const musicIcon = document.getElementById('musicIcon');
         const backgroundMusic = document.getElementById('backgroundMusic');
 
-        musicButton.addEventListener('click', function() {
+        musicButton.addEventListener('click', function () {
             if (backgroundMusic.paused) {
                 playMusic();
             } else {
@@ -224,10 +256,10 @@
         });
 
         function playMusic() {
-            backgroundMusic.play().then(function() {
+            backgroundMusic.play().then(function () {
                 musicIcon.src = 'icons/audio.png';
                 musicIcon.alt = 'Pause Icon';
-            }).catch(function(error) {
+            }).catch(function (error) {
                 console.error('Failed to start audio playback:', error);
             });
         }
@@ -242,4 +274,3 @@
         fetchAndUpdateData();
     </script>
 </body>
-</html>
