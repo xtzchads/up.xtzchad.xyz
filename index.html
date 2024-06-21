@@ -132,7 +132,7 @@
                 <img id="musicIcon" src="icons/silence.png" alt="Audio Icon">
             </button>
         </div>
-        <div id="realtimeData" class="realtime-data"></div>
+        <div id="realtimeData" class="realtime-data">Staked tez: 0.000000</div>
         <div class="progress-bar">
             <div id="progress" class="progress"></div>
             <div id="progressText" class="progress-text">0%</div>
@@ -159,17 +159,43 @@
         backgroundVideo.querySelector('source').src = getRandomVideoFilename();
         backgroundVideo.load();
 
+        // Exponential Moving Average calculation
+        const alpha = 0.2; // Weight factor for smoothing
+        let ema = 0; // Initial value for EMA
+        let lastEMAUpdate = Date.now(); // Track last EMA update time
+        let currentStakedValue = 0; // Current staked value to display
+
         async function fetchAndUpdateData() {
             try {
-                let response = await fetch('https://api.tzkt.io/v1/statistics/current');
+                let response = await fetch('https://api.tzkt.io/v1/statistics/?sort.desc=level&limit=60');
                 let data = await response.json();
-                let realtimeDataElement = document.getElementById('realtimeData');
-                realtimeDataElement.textContent = `Staked tez: ${parseInt(data.totalFrozen / 1000000).toLocaleString()}`;
 
-                updateProgressBar(data.totalFrozen, data.totalSupply);
+                // Calculate EMA from fetched data
+                let stakingRatios = data.map(block => parseInt(block.totalFrozen/1000000));
+                ema = calculateEMA(stakingRatios);
+				
+                // Update progress bar
+                updateProgressBar(data[0].totalFrozen, data[0].totalSupply);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
+        }
+
+        function calculateEMA(values) {
+            if (!values.length) return 0;
+            const smoothingFactor = 2 / (values.length + 1);
+            let ema = values[values.length-1];
+
+            for (let i = 1; i < values.length; i++) {
+                ema = (values[i] - ema) * smoothingFactor + ema;
+            }
+			console.log(ema);
+            return ema;
+        }
+
+        function updateCounter() {
+                currentStakedValue = ema;
+                document.getElementById('realtimeData').textContent = `Staked tez: ${parseInt(currentStakedValue).toLocaleString()}`;
         }
 
         function updateProgressBar(totalFrozen, totalSupply) {
@@ -179,10 +205,11 @@
 
             const progressTextElement = document.getElementById('progressText');
             progressTextElement.textContent = `${progress.toFixed(2)}%`;
+
+            updateCounter(); // Update the counter whenever the progress bar updates
         }
 
-        fetchAndUpdateData();
-        setInterval(fetchAndUpdateData, 30000);
+        setInterval(fetchAndUpdateData, 30000); // Update every 30 seconds
 
         const musicButton = document.getElementById('musicButton');
         const musicIcon = document.getElementById('musicIcon');
@@ -210,6 +237,9 @@
             musicIcon.src = 'icons/silence.png';
             musicIcon.alt = 'Audio Icon';
         }
+
+        // Initial fetch and setup
+        fetchAndUpdateData();
     </script>
 </body>
 </html>
