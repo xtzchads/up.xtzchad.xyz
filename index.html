@@ -20,32 +20,32 @@
         }
 
         .videoContainer {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
 
-        #backgroundVideo {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 0;
-        }
+#backgroundVideo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
 
-        #overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: black;
-            opacity: 0;
-            z-index: 1;
-            transition: opacity 0.5s ease;
-        }
+#overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    opacity: 0;
+    z-index: 1;
+    transition: opacity 0.5s ease;
+}
 
         .content {
             position: relative;
@@ -139,15 +139,15 @@
     </style>
 </head>
 <body>
-    <div class="videoContainer">
-        <video id="backgroundVideo" playsinline autoplay loop muted style="display:none;">
+    <div class="video-container">
+        <video id="backgroundVideo" playsinline autoplay loop muted>
             <source src="" type="video/mp4">
             Your browser does not support HTML5 video.
         </video>
-        <video id="preloaderVideo" style="display:none;">
-            <source src="" type="video/mp4">
-        </video>
-        <div id="overlay"></div>
+	    <video id="preloaderVideo" style="display:none;">
+        <source src="" type="video/mp4">
+    </video>
+		<div id="overlay" style="display:none;"></div>
     </div>
 
     <div class="content">
@@ -188,16 +188,17 @@
 
         async function fetchAndUpdateData() {
             try {
-                const startTime = performance.now();
+                const startTime = performance.now(); // Start measuring fetch time
                 let response = await fetch('https://api.tzkt.io/v1/statistics/?sort.desc=level&limit=60');
                 if (!response.ok) {
+                    // Retry with kukai.api.tzkt.io if fetch fails
                     response = await fetch('https://kukai.api.tzkt.io/v1/statistics/?sort.desc=level&limit=60');
                 }
                 let data = await response.json();
-                const fetchTime = performance.now() - startTime;
+                const fetchTime = performance.now() - startTime; // Calculate fetch time
                 stakingRatios = data.map(block => block.totalFrozen / 1000000);
                 ema = calculateEMA(stakingRatios);
-                const animationDuration = Math.max(0, 30000 - fetchTime);
+                const animationDuration = Math.max(0, 30000 - fetchTime); // Adjust animation time
                 updateProgressBar(data[0].totalFrozen, data[0].totalSupply, animationDuration);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -208,6 +209,7 @@
             if (!values.length) return 0;
             const smoothingFactor = 2 / (values.length + 1);
             if (initial) {
+                // Initialize EMA with SMA
                 const sma = values.reduce((sum, value) => sum + value, 0) / values.length;
                 ema = sma;
                 initial = false;
@@ -231,7 +233,11 @@
                 if (!startTimestamp) startTimestamp = timestamp;
                 const progress = Math.min((timestamp - startTimestamp) / duration, 1);
                 const current = start + progress * (end - start);
+
+                // Display formatted number with fixed width
                 element.textContent = `Staked tez: ${current.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+                // Adjust font size dynamically based on content length
                 const contentWidth = element.offsetWidth;
                 const elementWidth = element.clientWidth;
                 const fontSize = parseInt(window.getComputedStyle(element).fontSize);
@@ -240,6 +246,7 @@
                 } else if (fontSize < 24) {
                     element.style.fontSize = '24px';
                 }
+
                 if (progress < 1) {
                     window.requestAnimationFrame(step);
                 }
@@ -251,12 +258,14 @@
             const progress = (totalFrozen / totalSupply) * 100;
             const progressElement = document.getElementById('progress');
             progressElement.style.width = `${progress}%`;
+
             const progressTextElement = document.getElementById('progressText');
             progressTextElement.textContent = `${progress.toFixed(2)}%`;
+
             updateCounter(duration);
         }
 
-        setInterval(fetchAndUpdateData, 30000);
+        setInterval(fetchAndUpdateData, 30000); // Update every 30 seconds
 
         const musicButton = document.getElementById('musicButton');
         const musicIcon = document.getElementById('musicIcon');
@@ -309,52 +318,56 @@
             switchBackground();
         });
 
-        const preloaderVideo = document.getElementById('preloaderVideo');
-        const sourceElement = backgroundVideo.querySelector('source');
-        const preloaderSource = preloaderVideo.querySelector('source');
-        const overlay = document.getElementById('overlay');
+const preloaderVideo = document.getElementById('preloaderVideo');
+const sourceElement = backgroundVideo.querySelector('source');
+const preloaderSource = preloaderVideo.querySelector('source');
+const overlay = document.getElementById('overlay');
 
-        async function switchBackground() {
-            currentBackground = (currentBackground % totalBackgrounds) + 1;
-            const videoUrl = `backgrounds/${currentBackground}.mp4`;
+async function switchBackground() {
+    currentBackground = (currentBackground % totalBackgrounds) + 1;
+    const videoUrl = `backgrounds/${currentBackground}.mp4`;
 
-            overlay.style.display = 'block';
-            overlay.style.opacity = '1';
+    overlay.style.display = 'block';
+    overlay.style.opacity = '1';
 
-            preloaderSource.src = videoUrl;
-            preloaderVideo.load();
+    preloaderSource.src = videoUrl;
+    preloaderVideo.load();
 
-            preloaderVideo.oncanplaythrough = () => {
-                sourceElement.src = videoUrl;
-                backgroundVideo.load();
-
-                setTimeout(() => {
-                    overlay.style.opacity = '0';
-                    setTimeout(() => overlay.style.display = 'none', 500);
-                }, 100);
-
-                preloaderVideo.oncanplaythrough = null;
-            };
-        }
-
-	async function preloadInitialVideo() {
-   	 const videoUrl = `backgrounds/${currentBackground}.mp4`;
-   	 preloaderSource.src = videoUrl;
-   	 preloaderVideo.load();
-   	 preloaderVideo.oncanplaythrough = async () => {
-       	 await new Promise(resolve => setTimeout(resolve, 200));
-       	 sourceElement.src = videoUrl;
-       	 backgroundVideo.load();
-       	 backgroundVideo.style.display = 'block';
-       	 setTimeout(() => {
+    preloaderVideo.oncanplaythrough = () => {
+        sourceElement.src = videoUrl;
+        backgroundVideo.load();
+        
+        setTimeout(() => {
             overlay.style.opacity = '0';
             setTimeout(() => overlay.style.display = 'none', 500);
-       	 }, 100);
-       	 preloaderVideo.oncanplaythrough = null;
+        }, 100);
+
+        preloaderVideo.oncanplaythrough = null; // Remove the event listener
     };
 }
 
-	window.onload = preloadInitialVideo;
+	    async function preloadInitialVideo() {
+    const videoUrl = `backgrounds/${currentBackground}.mp4`;
+
+    preloaderSource.src = videoUrl;
+    preloaderVideo.load();
+
+    preloaderVideo.oncanplaythrough = () => {
+        sourceElement.src = videoUrl;
+        backgroundVideo.load();
+        backgroundVideo.style.display = 'block';
+
+        setTimeout(() => {
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.style.display = 'none', 500);
+        }, 100);
+
+        preloaderVideo.oncanplaythrough = null; // Remove the event listener
+    };
+}
+
+        window.onload = preloadInitialVideo;
+        // Initial fetch and setup
         fetchAndUpdateData();
     </script>
 </body>
