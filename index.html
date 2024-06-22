@@ -171,6 +171,7 @@
         let ema = 0; // Initial value for EMA, later changed to SMA
         let stakingRatios = []; // Array to store staking ratios
         let cur = 0;
+	let initial = true;
 
 	async function fetchAndUpdateData() {
 		try {
