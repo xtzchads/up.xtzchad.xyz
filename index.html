@@ -318,26 +318,37 @@
             switchBackground();
         });
 
-        async function switchBackground() {
-            currentBackground = (currentBackground % totalBackgrounds) + 1;
-            const videoUrl = `backgrounds/${currentBackground}.mp4`;
-            overlay.style.display = 'block';
-            overlay.style.opacity = '1';
-            const response = await fetch(videoUrl);
-            const videoBlob = await response.blob();
-            const videoBlobUrl = URL.createObjectURL(videoBlob);
-            const onCanPlay = () => {
-                sourceElement.src = videoBlobUrl;
-                backgroundVideo.load();
-                setTimeout(() => {
-                    overlay.style.opacity = '0';
-                    setTimeout(() => overlay.style.display = 'none', 500);
-                }, 100);
+let currentBackground = 1;
+const totalBackgrounds = 5;
+const backgroundVideo = document.getElementById('backgroundVideo');
+const preloaderVideo = document.getElementById('preloaderVideo');
+const sourceElement = backgroundVideo.querySelector('source');
+const preloaderSource = preloaderVideo.querySelector('source');
+const overlay = document.getElementById('overlay');
+
+async function switchBackground() {
+    currentBackground = (currentBackground % totalBackgrounds) + 1;
+    const videoUrl = `backgrounds/${currentBackground}.mp4`;
+
+    overlay.style.display = 'block';
+    overlay.style.opacity = '1';
+
+    preloaderSource.src = videoUrl;
+    preloaderVideo.load();
+
+    preloaderVideo.oncanplaythrough = () => {
+        sourceElement.src = videoUrl;
+        backgroundVideo.load();
         
-                backgroundVideo.removeEventListener('canplay', onCanPlay);
-            };
-            backgroundVideo.addEventListener('canplay', onCanPlay);
-        }
+        setTimeout(() => {
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.style.display = 'none', 500);
+        }, 100);
+
+        preloaderVideo.oncanplaythrough = null; // Remove the event listener
+    };
+}
+
         
         // Initial fetch and setup
         fetchAndUpdateData();
