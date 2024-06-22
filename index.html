@@ -62,7 +62,7 @@
             border-radius: 10px;
             margin-top: 10px;
             color: #fff;
-            width: 200px; /* Fixed width to prevent shaking */
+            width: 200px;
             text-align: center;
             overflow: hidden;
         }
@@ -113,7 +113,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: #000; /* Black text for better readability */
+            color: #000;
         }
 
         .icon-link {
@@ -162,58 +162,54 @@
     </audio>
 
     <script>
-		let currentBackground = Math.floor(Math.random() * 5 + 1);
-		const totalBackgrounds = 5;
+        let currentBackground = Math.floor(Math.random() * 5 + 1);
+        const totalBackgrounds = 5;
         const backgroundVideo = document.getElementById('backgroundVideo');
-        backgroundVideo.querySelector('source').src = 'backgrounds/'+currentBackground+'.mp4';
+        backgroundVideo.querySelector('source').src = `backgrounds/${currentBackground}.mp4`;
         backgroundVideo.load();
 
-        let ema = 0; // Initial value for EMA, later changed to SMA
-        let stakingRatios = []; // Array to store staking ratios
+        let ema = 0; 
+        let stakingRatios = [];
         let cur = 0;
-	let initial = true;
+        let initial = true;
 
-	async function fetchAndUpdateData() {
-		try {
-		const startTime = performance.now(); // Start measuring fetch time
-		let response = await fetch('https://api.tzkt.io/v1/statistics/?sort.desc=level&limit=60');
+        async function fetchAndUpdateData() {
+            try {
+                const startTime = performance.now(); // Start measuring fetch time
+                let response = await fetch('https://api.tzkt.io/v1/statistics/?sort.desc=level&limit=60');
                 if (!response.ok) {
                     // Retry with kukai.api.tzkt.io if fetch fails
                     response = await fetch('https://kukai.api.tzkt.io/v1/statistics/?sort.desc=level&limit=60');
                 }
-		let data = await response.json();
-		const fetchTime = performance.now() - startTime; // Calculate fetch time
-		stakingRatios = data.map(block => block.totalFrozen / 1000000);
-		ema = calculateEMA(stakingRatios);
-		const animationDuration = Math.max(0,30000-fetchTime); // Adjust animation time
-		updateProgressBar(data[0].totalFrozen, data[0].totalSupply,animationDuration);
-		} catch (error) {
-		console.error('Error fetching data:', error);
-		}
-	}
+                let data = await response.json();
+                const fetchTime = performance.now() - startTime; // Calculate fetch time
+                stakingRatios = data.map(block => block.totalFrozen / 1000000);
+                ema = calculateEMA(stakingRatios);
+                const animationDuration = Math.max(0, 30000 - fetchTime); // Adjust animation time
+                updateProgressBar(data[0].totalFrozen, data[0].totalSupply, animationDuration);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
 
-	function calculateEMA(values) {
-	    if (!values.length)
-	        return 0;
-		const smoothingFactor = 2 / (values.length + 1);
- 	   if (initial) {
-		//Initialize EMA with SMA
-		const sma = values.reduce((sum, value) => sum + value, 0) / values.length;
-		ema = sma;
-  		initial = false;
- 	   }
- 	   for (let i = values.length - 1; i >= 0; i--) {
-		ema = (values[i] - ema) * smoothingFactor + ema;
-		}
-		return ema;
-	}
+        function calculateEMA(values) {
+            if (!values.length) return 0;
+            const smoothingFactor = 2 / (values.length + 1);
+            if (initial) {
+                // Initialize EMA with SMA
+                const sma = values.reduce((sum, value) => sum + value, 0) / values.length;
+                ema = sma;
+                initial = false;
+            }
+            for (let i = values.length - 1; i >= 0; i--) {
+                ema = (values[i] - ema) * smoothingFactor + ema;
+            }
+            return ema;
+        }
 
         function updateCounter(duration) {
             const currentValue = cur;
-            /*if (cur == 0)
-                animateValue(currentValue, ema, 1500);
-            else*/
-                animateValue(currentValue, ema, duration);
+            animateValue(currentValue, ema, duration);
             cur = ema;
         }
 
@@ -229,13 +225,13 @@
                 element.textContent = `Staked tez: ${current.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
                 // Adjust font size dynamically based on content length
-                const contentWidth = element.offsetWidth; // Get current width of the content
-                const elementWidth = element.clientWidth; // Get current width of the element
-                const fontSize = parseInt(window.getComputedStyle(element).fontSize); // Get current font size
+                const contentWidth = element.offsetWidth;
+                const elementWidth = element.clientWidth;
+                const fontSize = parseInt(window.getComputedStyle(element).fontSize);
                 if (contentWidth > elementWidth) {
-                    element.style.fontSize = `${fontSize - 1}px`; // Decrease font size if content is wider than the element
+                    element.style.fontSize = `${fontSize - 1}px`;
                 } else if (fontSize < 24) {
-                    element.style.fontSize = '24px'; // Reset font size to default if it was decreased previously
+                    element.style.fontSize = '24px';
                 }
 
                 if (progress < 1) {
@@ -304,7 +300,6 @@
 
         const backgroundButton = document.getElementById('backgroundButton');
         const backgroundIcon = document.getElementById('backgroundIcon');
-
 
         backgroundButton.addEventListener('click', function () {
             switchBackground();
