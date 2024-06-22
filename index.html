@@ -307,12 +307,12 @@
 
         async function switchBackground() {
             currentBackground = (currentBackground % totalBackgrounds) + 1;
-			const videoUrl = `backgrounds/${currentBackground}.mp4`;
-			const response = await fetch(videoUrl);
-			const videoBlob = await response.blob();
-			const videoBlobUrl = URL.createObjectURL(videoBlob);
+            const videoUrl = `backgrounds/${currentBackground}.mp4`;
+            const response = await fetch(videoUrl);
+            const videoBlob = await response.blob();
+            const videoBlobUrl = URL.createObjectURL(videoBlob);
             backgroundVideo.querySelector('source').src = videoBlobUrl;
-			backgroundVideo.load();
+            backgroundVideo.load();
         }
 
         // Initial fetch and setup
