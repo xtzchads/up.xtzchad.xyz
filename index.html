@@ -191,20 +191,21 @@
 		}
 	}
 
-        function calculateEMA(values) {
-            if (!values.length)
-                return 0;
-            const smoothingFactor = 2 / (values.length + 1);
-            // Calculate Simple Moving Average (SMA)
-            let sma = values.reduce((sum, value) => sum + value, 0) / values.length;
-            // Initialize EMA with SMA
-            let ema = sma;
-            // Update EMA using exponential smoothing
-            for (let i = 1; i < values.length; i++) {
-                ema = (values[i] - ema) * smoothingFactor + ema;
-            }
-            return ema;
-        }
+	function calculateEMA(values) {
+	    if (!values.length)
+	        return 0;
+		const smoothingFactor = 2 / (values.length + 1);
+ 	   if (initial) {
+		//Initialize EMA with SMA
+		const sma = values.reduce((sum, value) => sum + value, 0) / values.length;
+		ema = sma;
+  		initial = false;
+ 	   }
+ 	   for (let i = values.length - 1; i >= 0; i--) {
+		ema = (values[i] - ema) * smoothingFactor + ema;
+		}
+		return ema;
+	}
 
         function updateCounter(duration) {
             const currentValue = cur;
