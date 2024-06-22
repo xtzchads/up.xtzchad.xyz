@@ -305,10 +305,14 @@
             switchBackground();
         });
 
-        function switchBackground() {
+        async function switchBackground() {
             currentBackground = (currentBackground % totalBackgrounds) + 1;
-            backgroundVideo.querySelector('source').src = `backgrounds/${currentBackground}.mp4`;
-            backgroundVideo.load();
+			const videoUrl = `backgrounds/${currentBackground}.mp4`;
+			const response = await fetch(videoUrl);
+			const videoBlob = await response.blob();
+			const videoBlobUrl = URL.createObjectURL(videoBlob);
+            backgroundVideo.querySelector('source').src = videoBlobUrl;
+			backgroundVideo.load();
         }
 
         // Initial fetch and setup
