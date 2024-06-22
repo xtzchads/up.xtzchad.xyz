@@ -329,25 +329,22 @@
             async function switchBackground() {
                 currentBackground = (currentBackground % totalBackgrounds) + 1;
                 const videoUrl = `backgrounds/${currentBackground}.mp4`;
-
-                overlay.style.display = "block";
-                overlay.style.opacity = "1";
-
+                overlay.style.display = 'block';
+                overlay.style.opacity = '1';
                 preloaderSource.src = videoUrl;
                 preloaderVideo.load();
-
-                preloaderVideo.oncanplaythrough = () => {
-                    sourceElement.src = videoUrl;
-                    backgroundVideo.load();
-
-                    setTimeout(() => {
-                        overlay.style.opacity = "0";
-                        setTimeout(() => (overlay.style.display = "none"), 500);
-                    }, 100);
-
-                    preloaderVideo.oncanplaythrough = null; // Remove the event listener
-                };
-            }
+                await new Promise(resolve => {
+                    preloaderVideo.onloadedmetadata = resolve;
+                });
+                await new Promise(resolve => setTimeout(resolve, 200));
+                sourceElement.src = videoUrl;
+                backgroundVideo.load();
+                setTimeout(() => {
+                    overlay.style.opacity = '0';
+                    setTimeout(() => overlay.style.display = 'none', 500);
+                }, 100);
+                preloaderVideo.onloadedmetadata = null;
+        }
 
             window.onload = switchBackground;
             // Initial fetch and setup
