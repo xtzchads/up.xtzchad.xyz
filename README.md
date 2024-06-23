@@ -13,6 +13,8 @@ Live at https://up.xtzchad.xyz
 ## Directory Structure
 
 - `index.html` : Main HTML file.
+- `css/main.css` : Main CSS file.
+- `js/main.js` : Main JS file.
 - `backgrounds/` : Directory containing the background video files.
 - `music/` : Directory containing the audio files.
 - `icons/` : Directory containing the icon images.
