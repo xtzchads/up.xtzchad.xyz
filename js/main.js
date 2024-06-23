@@ -170,4 +170,5 @@ let currentBackground = Math.floor(Math.random() * 5 + 1);
             window.onload = function() {
                 switchBackground();
                 fetchAndUpdateData();
+                backgroundMusic.src = `music/1.mp3`;
             }
