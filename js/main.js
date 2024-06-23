@@ -93,7 +93,7 @@ let currentBackground = Math.floor(Math.random() * 5 + 1);
             const backgroundMusic = document.getElementById("backgroundMusic");
 
             let currentTrack = 1;
-            const totalTracks = 4;
+            const totalTracks = 6;
 
             const shuffleButton = document.getElementById("shuffleButton");
             const shuffleIcon = document.getElementById("shuffleIcon");
