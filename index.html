@@ -345,11 +345,12 @@
                     setTimeout(() => overlay.style.display = 'none', 500);
                 }, 100);
                 preloaderVideo.onloadedmetadata = null;
-        }
+            }
 
-            window.onload = switchBackground;
-            // Initial fetch and setup
-            fetchAndUpdateData();
+            window.onload = function() {
+                switchBackground();
+                fetchAndUpdateData();
+            }
         </script>
     </body>
 </html>
