@@ -1,6 +1,6 @@
 
-let currentBackground = Math.floor(Math.random() * 5 + 1);
             const totalBackgrounds = 7;
+            let currentBackground = Math.floor(Math.random() * (totalBackgrounds)) + 1;
 
             let ema = 0;
             let stakingRatios = [];
