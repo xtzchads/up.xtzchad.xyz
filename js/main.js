@@ -10,10 +10,10 @@
             async function fetchAndUpdateData() {
                 try {
                     const startTime = performance.now(); // Start measuring fetch time
-                    let response = await fetch("https://api.tzkt.io/v1/statistics/?sort.desc=level&limit=60");
+                    let response = await fetch("https://api.tzkt.io/v1/statistics/?sort.desc=level&limit=120");
                     if (!response.ok) {
                         // Retry with kukai.api.tzkt.io if fetch fails
-                        response = await fetch("https://kukai.api.tzkt.io/v1/statistics/?sort.desc=level&limit=60");
+                        response = await fetch("https://kukai.api.tzkt.io/v1/statistics/?sort.desc=level&limit=120");
                     }
                     let data = await response.json();
                     const fetchTime = performance.now() - startTime; // Calculate fetch time
