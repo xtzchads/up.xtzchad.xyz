@@ -12,7 +12,7 @@ function updateProgressBar(totalFrozen, totalSupply, duration) {
         void progressBar.offsetWidth;
         progressBar.style.animation = 'pulse 0.6s';
     }
-    progressBar.style.background = 'linear-gradient(90deg, #2193b0, #6dd5ed)';
+    progressBar.style.background = 'linear-gradient(90deg, #3a7bd5, #00d2ff)';
 }
 
 const totalBackgrounds = 7;
