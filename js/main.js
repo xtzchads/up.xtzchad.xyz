@@ -7,17 +7,17 @@ function updateProgressBar(totalFrozen, totalSupply, duration) {
     progressText.textContent = `${progress.toFixed(2)}%`;
     updateCounter(duration);
 
-    if (percentage % 5 < 0.1) {
+    if (progress % 5 < 0.1) {
         progressBar.style.animation = 'none';
         void progressBar.offsetWidth;
         progressBar.style.animation = 'pulse 0.6s';
     }
 
-    if (percentage > 75) {
+    if (progress > 75) {
         progressBar.style.background = 'linear-gradient(90deg, #00d2ff, #3a7bd5)';
-    } else if (percentage > 50) {
+    } else if (progress > 50) {
         progressBar.style.background = 'linear-gradient(90deg, #3a7bd5, #00d2ff)';
-    } else if (percentage > 25) {
+    } else if (progress > 25) {
         progressBar.style.background = 'linear-gradient(90deg, #6dd5ed, #2193b0)';
     } else {
         progressBar.style.background = 'linear-gradient(90deg, #2193b0, #6dd5ed)';
