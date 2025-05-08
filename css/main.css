@@ -59,17 +59,6 @@ body {
                 gap: 5px;
             }
 
-            .realtime-data {
-                font-size: 24px;
-                background-color: rgba(0, 0, 0, 0.5);
-                padding: 10px;
-                border-radius: 10px;
-                margin-top: 10px;
-                color: #fff;
-                width: 200px;
-                text-align: center;
-                overflow: hidden;
-            }
 
             .music-button {
                 background-color: transparent;
@@ -92,33 +81,7 @@ body {
                 background-color: rgba(0, 0, 0, 0.1);
             }
 
-            .progress-bar {
-                width: 100%;
-                max-width: 600px;
-                height: 30px;
-                background-color: #f0f0f0;
-                border-radius: 50px;
-                margin-top: 10px;
-                overflow: hidden;
-                position: relative;
-            }
 
-            .progress {
-                height: 100%;
-                width: 0;
-                background: linear-gradient(to right, #0f61ff, #003ee0);
-                transition: width 0.3s ease;
-                border-radius: 5px;
-            }
-
-            .progress-text {
-                font-size: 14px;
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                color: #000;
-            }
 
             .icon-link {
                 margin-top: 10px;
@@ -128,3 +91,92 @@ body {
                 width: 30px;
                 height: 30px;
             }
+.progress-bar {
+    width: 100%;
+    max-width: 600px;
+    height: 30px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+	margin-top:10px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.progress {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, #3a7bd5, #00d2ff);
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.7);
+    transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.progress::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    animation: shimmer 1.5s infinite;
+    transform: skewX(-20deg);
+}
+
+.progress-text {
+    font-size: 14px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #000;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    z-index: 2;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%) skewX(-20deg);
+    }
+    100% {
+        transform: translateX(200%) skewX(-20deg);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 210, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(0, 210, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 210, 255, 0);
+    }
+}
+
+.realtime-data {
+    font-size: 24px;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 12px 15px;
+    border-radius: 12px;
+    margin-top: 10px;
+    color: #fff;
+    width: 200px;
+    text-align: center;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
