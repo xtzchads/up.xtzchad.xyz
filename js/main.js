@@ -12,16 +12,7 @@ function updateProgressBar(totalFrozen, totalSupply, duration) {
         void progressBar.offsetWidth;
         progressBar.style.animation = 'pulse 0.6s';
     }
-
-    if (progress > 75) {
-        progressBar.style.background = 'linear-gradient(90deg, #00d2ff, #3a7bd5)';
-    } else if (progress > 50) {
-        progressBar.style.background = 'linear-gradient(90deg, #3a7bd5, #00d2ff)';
-    } else if (progress > 25) {
-        progressBar.style.background = 'linear-gradient(90deg, #6dd5ed, #2193b0)';
-    } else {
-        progressBar.style.background = 'linear-gradient(90deg, #2193b0, #6dd5ed)';
-    }
+    progressBar.style.background = 'linear-gradient(90deg, #2193b0, #6dd5ed)';
 }
 
 const totalBackgrounds = 7;
