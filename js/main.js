@@ -31,7 +31,7 @@ function updateDALProgressBar(dalPercentage, duration) {
     dalProgressBar.style.background = 'linear-gradient(90deg, #ff6b6b, #feca57)';
 }
 
-const totalBackgrounds = 7;
+const totalBackgrounds = 10;
 let currentBackground = Math.floor(Math.random() * (totalBackgrounds)) + 1;
 
 let ema = 0;
@@ -161,7 +161,7 @@ const musicIcon = document.getElementById("musicIcon");
 const backgroundMusic = document.getElementById("backgroundMusic");
 
 let currentTrack = 1;
-const totalTracks = 9;
+const totalTracks = 6;
 
 const shuffleButton = document.getElementById("shuffleButton");
 const shuffleIcon = document.getElementById("shuffleIcon");
