@@ -15,69 +15,127 @@ function updateProgressBar(totalFrozen, totalSupply, duration) {
     progressBar.style.background = 'linear-gradient(90deg, #3a7bd5, #00d2ff)';
 }
 
+function updateDALProgressBar(dalPercentage, duration) {
+    const dalProgressBar = document.getElementById('dalProgress');
+    const dalProgressText = document.getElementById('dalProgressText');
+
+    dalProgressBar.style.width = `${dalPercentage}%`;
+    dalProgressText.textContent = `${dalPercentage.toFixed(2)}%`;
+    updateDALCounter(dalPercentage, duration);
+
+    if (dalPercentage % 5 < 0.1) {
+        dalProgressBar.style.animation = 'none';
+        void dalProgressBar.offsetWidth;
+        dalProgressBar.style.animation = 'pulse 0.6s';
+    }
+    dalProgressBar.style.background = 'linear-gradient(90deg, #ff6b6b, #feca57)';
+}
+
 const totalBackgrounds = 7;
 let currentBackground = Math.floor(Math.random() * (totalBackgrounds)) + 1;
 
 let ema = 0;
+let dalEma = 0;
 let stakingRatios = [];
+let dalPercentages = [];
 let cur = 0;
+let dalCur = 0;
 let initial = true;
+let dalInitial = true;
 
 async function fetchAndUpdateData() {
     try {
         const startTime = performance.now(); // Start measuring fetch time
+        
+        // Fetch Tezos staking data
         let response = await fetch("https://api.tzkt.io/v1/statistics/?sort.desc=level&limit=120");
         if (!response.ok) {
             // Retry with kukai.api.tzkt.io if fetch fails
             response = await fetch("https://kukai.api.tzkt.io/v1/statistics/?sort.desc=level&limit=120");
         }
         let data = await response.json();
+        
+        // Fetch DAL data
+        let dalResponse = await fetch("https://dal-dashboard.vercel.app/api/history");
+        let dalData = await dalResponse.json();
+        
         const fetchTime = performance.now() - startTime; // Calculate fetch time
+        
+        // Process Tezos data
         stakingRatios = data.map((block) => block.totalFrozen / 1000000);
-        ema = calculateEMA(stakingRatios);
+        ema = calculateEMA(stakingRatios, 'tezos');
+        
+        // Process DAL data
+        dalPercentages = dalData.map((entry) => entry.dal_baking_power_percentage);
+        dalEma = calculateEMA(dalPercentages, 'dal');
+        
         const animationDuration = Math.max(0, 30000 - fetchTime); // Adjust animation time
+        
         updateProgressBar(data[0].totalFrozen, data[0].totalSupply, animationDuration);
+        updateDALProgressBar(dalData[0].dal_baking_power_percentage, animationDuration);
     } catch (error) {
         console.error("Error fetching data:", error);
     }
 }
 
-function calculateEMA(values) {
+function calculateEMA(values, type) {
     if (!values.length)
         return 0;
+    
     const smoothingFactor = 2 / (values.length + 1);
-    if (initial) {
+    let currentEma = type === 'tezos' ? ema : dalEma;
+    let isInitial = type === 'tezos' ? initial : dalInitial;
+    
+    if (isInitial) {
         // Initialize EMA with SMA
         const sma = values.reduce((sum, value) => sum + value, 0) / values.length;
-        ema = sma;
-        initial = false;
+        currentEma = sma;
+        if (type === 'tezos') {
+            initial = false;
+        } else {
+            dalInitial = false;
+        }
     }
+    
     for (let i = values.length - 1; i >= 0; i--) {
-        ema = (values[i] - ema) * smoothingFactor + ema;
+        currentEma = (values[i] - currentEma) * smoothingFactor + currentEma;
     }
-    return ema;
+    
+    return currentEma;
 }
 
 function updateCounter(duration) {
     const currentValue = cur;
-    animateValue(currentValue, ema, duration);
+    animateValue(currentValue, ema, duration, 'tezos');
     cur = ema;
 }
 
-function animateValue(start, end, duration) {
+function updateDALCounter(per, duration) {
+    const currentValue = dalCur;
+    animateValue(per, per, duration, 'dal');
+    dalCur = dalEma;
+}
+
+function animateValue(start, end, duration, type) {
     let startTimestamp = null;
-    const element = document.getElementById("realtimeData");
+    const element = document.getElementById(type === 'tezos' ? "realtimeData" : "dalRealtimeData");
+    
     const step = (timestamp) => {
         if (!startTimestamp)
             startTimestamp = timestamp;
         const progress = Math.min((timestamp - startTimestamp) / duration, 1);
         const current = start + progress * (end - start);
 
-        // Display formatted number with fixed width
-        element.textContent = `Staked ꜩ: ${current.toLocaleString(undefined, {
+        if (type === 'tezos') {
+            // Display formatted number with fixed width for Tezos
+            element.textContent = `Staked ꜩ: ${current.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             })}`;
+        } else {
+            // Display DAL percentage
+            element.textContent = `DAL Support: ${current.toFixed(2)}%`;
+        }
 
         // Adjust font size dynamically based on content length
         const contentWidth = element.offsetWidth;
