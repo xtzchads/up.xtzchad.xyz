@@ -161,7 +161,7 @@ const musicIcon = document.getElementById("musicIcon");
 const backgroundMusic = document.getElementById("backgroundMusic");
 
 let currentTrack = 1;
-const totalTracks = 6;
+const totalTracks = 9;
 
 const shuffleButton = document.getElementById("shuffleButton");
 const shuffleIcon = document.getElementById("shuffleIcon");
