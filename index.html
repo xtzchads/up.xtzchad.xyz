@@ -3,10 +3,10 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="description" content="TezCalm - A calming and informative platform for tracking Tezos staking data and DAL progress in real-time, accompanied by soothing background music and dynamic visuals." />
+        <meta name="description" content="TezCalm - A calming and informative platform for tracking Tezos staking data in real-time, accompanied by soothing background music and dynamic visuals." />
         <title>TezCalm</title>
         <link rel="icon" type="image/png" href="icons/tezos.png" />
-        <link rel="stylesheet" href="css/main.css?v=1.2" />
+        <link rel="stylesheet" href="css/main.css?v=1.1" />
     </head>
     <body>
         <div class="video-container">
@@ -32,25 +32,11 @@
                     <img id="backgroundIcon" src="icons/background.png" alt="Background Icon" />
                 </button>
             </div>
-            
-            <div class="data-container" style="display:flex!important;gap:1rem;flex-wrap: wrap;justify-content: center;">
-                <div class="data-block">
-                    <div id="realtimeData" class="realtime-data">Staked ꜩ: 0.000000</div>
-                    <div class="progress-bar">
-                        <div id="progress" class="progress"></div>
-                        <div id="progressText" class="progress-text">0%</div>
-                    </div>
-                </div>
-                
-                <!--<div class="data-block">
-                    <div id="dalRealtimeData" class="realtime-data">DAL Support: 0.00%</div>
-                    <div class="progress-bar">
-                        <div id="dalProgress" class="progress"></div>
-                        <div id="dalProgressText" class="progress-text">0%</div>
-                    </div>
-                </div>-->
+            <div id="realtimeData" class="realtime-data">Staked ꜩ: 0.000000</div>
+            <div class="progress-bar">
+                <div id="progress" class="progress"></div>
+                <div id="progressText" class="progress-text">0%</div>
             </div>
-            
             <a href="https://github.com/xtzchad/up.xtzchad.xyz" class="icon-link" target="_blank">
                 <img src="icons/Tezos-social-icon-black-04.png" alt="Tezos Icon" />
             </a>
@@ -60,6 +46,6 @@
             <source src="" type="audio/mpeg" />
             Your browser does not support the audio element.
         </audio>
-        <script src="js/main.js?v=3.8"></script>
+        <script src="js/main.js?v=3.7"></script>
     </body>
 </html>
