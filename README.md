@@ -21,7 +21,7 @@ Live at https://up.xtzchad.xyz
 
 ## Contributing
 
-Feel free to fork the repository and submit pull requests. Any improvements to enhance the meditation experience or update the Tezos staking data display are welcome.
+Feel free to fork the repository and submit pull requests. Any improvements to enhance the meditation experience are welcome.
 
 ## License
 
